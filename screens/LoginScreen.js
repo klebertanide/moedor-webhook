@@ -1,46 +1,57 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { supabase } from '../lib/supabase'
 
 export default function LoginScreen() {
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const handleLogin = () => {
-    // Aqui você pode conectar com o Supabase Auth futuramente
-    console.log('Login com:', email, password)
-    navigation.navigate('Home')
+  const handleLogin = async () => {
+    setLoading(true)
+    setError(null)
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    setLoading(false)
+
+    if (error) {
+      setError(error.message)
+    } else {
+      navigation.navigate('Home')
+    }
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Entrar no MOEDOR</Text>
+      <Text style={styles.title}>Login no MOEDOR</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        placeholder="E-mail"
         autoCapitalize="none"
+        keyboardType="email-address"
+        onChangeText={setEmail}
+        value={email}
       />
 
       <TextInput
         style={styles.input}
         placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
         secureTextEntry
+        onChangeText={setPassword}
+        value={password}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
+      {error && <Text style={styles.error}>{error}</Text>}
 
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text style={styles.link}>Ainda não tem conta? Cadastre-se</Text>
-      </TouchableOpacity>
+      <Button title={loading ? 'Carregando...' : 'Entrar'} onPress={handleLogin} disabled={loading} />
     </View>
   )
 }
@@ -53,7 +64,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 30,
     textAlign: 'center',
@@ -62,23 +73,13 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-  },
-  button: {
-    backgroundColor: '#000',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
     marginBottom: 15,
+    paddingHorizontal: 10,
+    borderRadius: 5,
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  link: {
-    color: '#0066cc',
+  error: {
+    color: 'red',
+    marginBottom: 10,
     textAlign: 'center',
   },
 })
