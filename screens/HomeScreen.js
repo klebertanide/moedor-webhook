@@ -1,25 +1,47 @@
-import { useEffect, useState } from 'react'
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native'
-import { supabase } from '../lib/supabase'
+import React from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
-export default function HomeScreen({ navigation }) {
-  const [modules, setModules] = useState([])
+export default function HomeScreen() {
+  const navigation = useNavigation()
 
-  useEffect(() => {
-    supabase.from('modules').select('*').then(({ data }) => setModules(data))
-  }, [])
+  const handleLogout = () => {
+    // Aqui futuramente entra o logout real do Supabase
+    navigation.navigate('Login')
+  }
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <Text style={{ fontSize: 28, fontWeight: 'bold', marginBottom: 20 }}>Catálogo MOEDOR</Text>
-      {modules.map(mod => (
-        <TouchableOpacity key={mod.id} style={{ marginBottom: 30 }}
-          onPress={() => navigation.navigate('Module', { moduleId: mod.id })}>
-          <Image source={{ uri: mod.cover_url }} style={{ height: 180, borderRadius: 12, marginBottom: 8 }} />
-          <Text style={{ fontSize: 20, fontWeight: '600' }}>{mod.title}</Text>
-          <Text style={{ color: '#777' }}>{mod.description}</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+    <View style={styles.container}>
+      <Text style={styles.title}>Bem-vindo ao MOEDOR!</Text>
+
+      <TouchableOpacity style={styles.button} onPress={handleLogout}>
+        <Text style={styles.buttonText}>Sair</Text>
+      </TouchableOpacity>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 30,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#000',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+})
