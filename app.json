@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "MOEDOR",
+    "slug": "moedor",
+    ...
+    "extra": {
+      "eas": {
+        "projectId": "..."
+      }
+    },
+    "plugins": ["dotenv"]
+  }
+}
